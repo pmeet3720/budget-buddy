@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dto.LoginDTO;
 import com.models.UsersModel;
 import com.repository.UsersRepository;
+import com.security.JWTUtil;
 
 @RestController
 @RequestMapping("/api/public")
@@ -22,6 +23,9 @@ public class SessionController {
 	
 	@Autowired
 	UsersRepository usersRepository;
+	
+	@Autowired
+	JWTUtil jwtUtil;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signUpUser(@RequestBody UsersModel user){
@@ -43,13 +47,20 @@ public class SessionController {
 			UsersModel user = op.get();
 			if(user.getPassword().equals(dto.getPassword())) {
 				//login done
+				
+				String token = jwtUtil.generateToken(user.getId(), user.getEmail());
+				
 				Map<String, Object> map = new HashMap<>();
+				map.put("token", token);
 				map.put("user", user);
 				map.put("msg", "login successfull");
 				return ResponseEntity.status(HttpStatus.OK).body(map);
 			}
 		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(dto);
+		Map<String, Object> err = new HashMap<>();
+	    err.put("msg", "Invalid email or password");
+	    err.put("data", dto);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
 		
 	}
 

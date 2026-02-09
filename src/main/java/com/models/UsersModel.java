@@ -36,18 +36,15 @@ public class UsersModel {
 	@NonNull
 	String password;
 	
-	@NonNull
-	String contactNo;
-	
-	@NonNull
-	String gender;
-	
-	@NonNull
-	Roles role;
-	
-	Boolean status;
-	
-	@DBRef
-	List<ExpensesModel> expenses = new ArrayList<>();
+//	@NonNull
+//	String contactNo;
+//	
+//	@NonNull
+//	String gender;
+//	
+//	@NonNull
+//	Roles role;
+//	
+//	Boolean status;
 	
 }
