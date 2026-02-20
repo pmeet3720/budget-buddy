@@ -1,7 +1,11 @@
 import axios from "axios";
 
-const expenseApi = axios.create({
-  baseURL: "/api/expense", // 👈 important: no localhost here
+export const expenseApi = axios.create({
+  baseURL: "/api/expense",
+});
+
+export const loginApi = axios.create({
+  baseURL: "/api/public",
 });
 
 expenseApi.interceptors.request.use((config) => {
@@ -11,5 +15,3 @@ expenseApi.interceptors.request.use((config) => {
   }
   return config;
 });
-
-export default expenseApi;

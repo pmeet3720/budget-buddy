@@ -42,8 +42,8 @@ public class UsersModel {
 //	@NonNull
 //	String gender;
 //	
-//	@NonNull
-//	Roles role;
+
+	Roles role;
 //	
 //	Boolean status;
 	

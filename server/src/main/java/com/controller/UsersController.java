@@ -13,7 +13,7 @@ import com.models.UsersModel;
 import com.repository.UsersRepository;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/admin/user")
 public class UsersController {
 	
 	@Autowired

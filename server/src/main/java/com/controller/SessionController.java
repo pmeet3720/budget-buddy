@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +28,19 @@ public class SessionController {
 	@Autowired
 	JWTUtil jwtUtil;
 	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signUpUser(@RequestBody UsersModel user){
 		Optional<UsersModel> op =  usersRepository.findByEmail(user.getEmail());
 		if(op.isPresent()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(user);
 		}
+		
+		//hash password
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		
 		usersRepository.save(user);
 		Map<String, Object> map = new HashMap<>();
 		map.put("user", user);
@@ -45,16 +53,21 @@ public class SessionController {
 		Optional<UsersModel> op =  usersRepository.findByEmail(dto.getEmail());
 		if(op.isPresent()) {
 			UsersModel user = op.get();
-			if(user.getPassword().equals(dto.getPassword())) {
+			if(passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 				//login done
 				
-				String token = jwtUtil.generateToken(user.getId(), user.getEmail());
-				
-				Map<String, Object> map = new HashMap<>();
-				map.put("token", token);
-				map.put("user", user);
-				map.put("msg", "login successfull");
-				return ResponseEntity.status(HttpStatus.OK).body(map);
+				String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
+
+			    Map<String, Object> response = new HashMap<>();
+			    response.put("token", token);
+			    response.put("user", Map.of(
+			            "id", user.getId(),
+			            "email", user.getEmail(),
+			            "firstName", user.getFirstName(),
+			            "role", user.getRole()
+			    ));	
+			    response.put("msg", "Login successful");
+				return ResponseEntity.status(HttpStatus.OK).body(response);
 			}
 		}
 		Map<String, Object> err = new HashMap<>();

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import expenseApi from "../apis/index";
+import { expenseApi } from "../../apis/index";
 
 export const ListExpenses = () => {
   const [data, setData] = useState([]);
